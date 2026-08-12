@@ -1036,6 +1036,39 @@ section[id] { scroll-margin-top: 84px; }
   .numbered-block { flex-direction: column; gap: 12px; }
   .routine-generator { padding: 24px 20px; }
   .quiz-card { padding: 24px 20px; }
+
+  /* Roadmap "01-05" du hero : évite le chevauchement avec les boutons CTA.
+     Les décalages "bottom" d'origine sont pensés pour un conteneur de
+     420px ; sans recalcul, les étapes 04/05 débordent au-dessus de leur
+     propre conteneur sur mobile et remontent sur les boutons. */
+  .hero-text { position: relative; z-index: 2; }
+
+  .rank-ladder {
+    position: relative;
+    z-index: 1;
+    height: 260px;
+    margin-top: 56px;
+    overflow: hidden; /* filet de sécurité anti-chevauchement */
+  }
+
+  .rank-step:nth-child(1) { bottom: 0;    left: 4%; }
+  .rank-step:nth-child(2) { bottom: 52px; left: 4%; }
+  .rank-step:nth-child(3) { bottom: 104px; left: 4%; }
+  .rank-step:nth-child(4) { bottom: 156px; left: 4%; }
+  .rank-step:nth-child(5) { bottom: 208px; left: 4%; }
+
+  .rank-step {
+    padding: 8px 14px 8px 8px;
+    gap: 8px;
+  }
+  .rank-step .badge {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+  .rank-step span.label {
+    font-size: 12.5px;
+  }
 }
 @media (max-width: 480px) {
   .hero { padding: 56px 0 64px; }
