@@ -464,10 +464,74 @@
       <div class="cta-banner reveal" style="text-align:left; display:flex; align-items:center; justify-content:space-between; gap: 32px; flex-wrap: wrap;">
         <div style="max-width: 480px;">
           <h2 style="text-align:left;">Tu cherches une équipe maintenant ?</h2>
-          <p style="text-align:left; margin: 0;">Cette fonctionnalité arrivera dans une future version du site. Pour l'instant, appuie-toi sur les conseils ci-dessus.</p>
-          <div id="find-team-notice" class="notice">Cette fonctionnalité de mise en relation arrivera dans une prochaine version de Brawl Esport FR. 🚀</div>
+          <p style="text-align:left; margin: 0;">Poste ton annonce juste en dessous — pseudo, trophées et contact, en quelques secondes.</p>
         </div>
-        <button id="find-team-btn" class="btn btn-primary">Je cherche une équipe</button>
+        <a href="#lfg" class="btn btn-primary">Je cherche une équipe</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       LFG — Recherche de coéquipiers (Firebase Firestore)
+  ========================================================= -->
+  <section id="lfg" class="section section-alt">
+    <div class="container">
+      <div class="eyebrow">// LFG</div>
+      <div class="section-head">
+        <h2>Recherche de coéquipiers</h2>
+        <p>Publie ton annonce pour trouver des coéquipiers, ou parcours celles déjà postées par la communauté — mise à jour en temps réel.</p>
+      </div>
+
+      <div class="reviews-layout">
+
+        <form id="lfg-form" class="review-form reveal" novalidate>
+
+          <div class="lfg-form-row">
+            <div class="form-field">
+              <label for="lfg-pseudo">Pseudo</label>
+              <input type="text" id="lfg-pseudo" maxlength="30" placeholder="Ex : Darknow" required>
+            </div>
+            <div class="form-field">
+              <label for="lfg-trophies">Trophées</label>
+              <input type="number" id="lfg-trophies" min="0" max="500000" placeholder="Ex : 25000" required>
+            </div>
+          </div>
+
+          <div class="lfg-form-row">
+            <div class="form-field">
+              <label for="lfg-mode">Mode préféré</label>
+              <select id="lfg-mode" required>
+                <option value="" disabled selected>Choisis un mode</option>
+                <option value="3v3">3v3</option>
+                <option value="brawlball">Brawlball</option>
+                <option value="coupe-etoiles">Coupe Stars</option>
+                <option value="duel">Duel</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="lfg-contact">Contact (tag joueur ou Discord)</label>
+              <input type="text" id="lfg-contact" maxlength="40" placeholder="Ex : #ABC123 ou pseudo#0000" required>
+            </div>
+          </div>
+
+          <p class="lfg-safety-note">⚠️ Ton annonce sera publique. N'indique jamais d'informations personnelles (numéro, adresse, réseaux privés) — uniquement ton tag Brawl Stars ou ton identifiant Discord.</p>
+
+          <div id="lfg-status" class="review-status" role="status" aria-live="polite"></div>
+
+          <button type="submit" class="btn btn-primary" id="lfg-submit-btn">Publier mon annonce</button>
+        </form>
+
+        <div class="reviews-list-wrap">
+          <div class="reviews-list-head">
+            <h3>Annonces récentes</h3>
+            <span class="reviews-count" id="lfg-count">—</span>
+          </div>
+          <div id="lfg-list" class="reviews-list" aria-live="polite">
+            <p class="reviews-empty">Chargement des annonces...</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -1044,6 +1108,7 @@
           <li><a href="#debuter">Débuter</a></li>
           <li><a href="#routine">Routine</a></li>
           <li><a href="#equipes">Équipes</a></li>
+          <li><a href="#lfg">LFG</a></li>
           <li><a href="#quiz">Quiz</a></li>
           <li><a href="#competitions">Compétitions</a></li>
           <li><a href="#guides">Guides</a></li>

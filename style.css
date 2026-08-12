@@ -911,6 +911,48 @@ section[id] { scroll-margin-top: 84px; }
 .form-field input[type="text"]::placeholder,
 .form-field textarea::placeholder { color: var(--text-muted); }
 
+.form-field input[type="number"],
+.form-field select {
+  width: 100%;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 12px 14px;
+  color: var(--text-light);
+  font-family: var(--ff-body);
+  font-size: 14.5px;
+  transition: border-color .15s ease;
+}
+.section-light .form-field input[type="number"],
+.section-light .form-field select {
+  background: var(--light);
+  border-color: var(--border-light);
+  color: var(--text-dark);
+}
+.form-field input[type="number"]:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: var(--secondary);
+}
+.form-field select { cursor: pointer; }
+
+/* --- LFG : mise en page à deux champs par ligne --- */
+.lfg-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.lfg-safety-note {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  background: rgba(255,176,32,.08);
+  border: 1px solid rgba(255,176,32,.25);
+  border-radius: var(--radius-s);
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
 .star-rating { display: flex; gap: 6px; }
 .star-btn {
   background: none;
@@ -1001,6 +1043,62 @@ section[id] { scroll-margin-top: 84px; }
   line-height: 1.55;
 }
 
+/* --- LFG : détails spécifiques à une annonce (trophées, mode, contact) --- */
+.lfg-trophies {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--primary);
+  white-space: nowrap;
+}
+.lfg-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.lfg-mode-tag {
+  font-family: var(--ff-mono);
+  font-size: 11.5px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  background: rgba(61,139,255,.12);
+  border: 1px solid rgba(61,139,255,.3);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.lfg-contact {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--text-light);
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: var(--radius-s);
+}
+.section-light .lfg-contact {
+  background: var(--light);
+  border-color: var(--border-light);
+  color: var(--text-dark);
+}
+.lfg-report-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--ff-mono);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  transition: color .15s ease;
+}
+.lfg-report-btn:hover:not(:disabled) { color: var(--live); }
+.lfg-report-btn:disabled { color: var(--text-muted); opacity: .6; cursor: default; }
+.lfg-report-btn::before { content: "⚑"; font-size: 11px; }
+
 /* =========================
    RESPONSIVE
 ========================= */
@@ -1036,6 +1134,7 @@ section[id] { scroll-margin-top: 84px; }
   .numbered-block { flex-direction: column; gap: 12px; }
   .routine-generator { padding: 24px 20px; }
   .quiz-card { padding: 24px 20px; }
+  .lfg-form-row { grid-template-columns: 1fr; gap: 0; }
 
   /* Roadmap "01-05" du hero : évite le chevauchement avec les boutons CTA.
      Les décalages "bottom" d'origine sont pensés pour un conteneur de
@@ -1159,12 +1258,20 @@ body {
   .review-form { padding: 22px 18px; }
   .form-field label { font-size: 11.5px; }
   .form-field input[type="text"],
+  .form-field input[type="number"],
+  .form-field select,
   .form-field textarea { font-size: 14px; padding: 11px 13px; }
   .star-btn { font-size: 24px; }
   .review-card { padding: 16px 18px; }
   .review-author { font-size: 14px; }
   .review-stars { font-size: 13px; }
   .review-comment { font-size: 13.5px; }
+
+  /* Recherche de coéquipiers (LFG) */
+  .lfg-safety-note { font-size: 12px; padding: 9px 11px; }
+  .lfg-trophies { font-size: 12px; }
+  .lfg-mode-tag { font-size: 11px; padding: 3px 9px; }
+  .lfg-contact { font-size: 12px; padding: 3px 9px; }
   .reviews-list { max-height: 460px; }
 }
 

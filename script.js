@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initRoleQuiz();
   initGuideAccordion();
   initReviews();
+  initLFG();
 });
 
 /* ---------------------------------------------------------
@@ -554,6 +555,31 @@ function initGuideAccordion() {
 }
 
 /* ---------------------------------------------------------
+   Config Firebase partagée (Avis + LFG utilisent le même projet).
+--------------------------------------------------------- */
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyCaGCtB23h1VKjJvnNlDMh3qzLsxAGtrSI',
+  authDomain: 'site-esport-vraie-version.firebaseapp.com',
+  projectId: 'site-esport-vraie-version',
+  storageBucket: 'site-esport-vraie-version.firebasestorage.app',
+  messagingSenderId: '255435160470',
+  appId: '1:255435160470:web:50acf8117b181cb0b57bb7'
+};
+
+// Initialise l'app Firebase une seule fois, quel que soit le module qui
+// l'appelle en premier (Avis ou LFG). Lève une erreur si le SDK ou la
+// config est indisponible — à appeler dans un try/catch.
+function ensureFirebaseApp() {
+  if (typeof firebase === 'undefined') {
+    throw new Error('SDK Firebase (compat) non chargé');
+  }
+  if (!firebase.apps.length) {
+    firebase.initializeApp(FIREBASE_CONFIG);
+  }
+  return firebase;
+}
+
+/* ---------------------------------------------------------
    12. Avis de la communauté — Firebase Firestore (#avis)
    Envoi + lecture en temps réel (onSnapshot), tri du plus récent
    au plus ancien. Nécessite les SDK compat "firebase-app-compat.js"
@@ -599,29 +625,9 @@ function initReviews() {
     btn.addEventListener('click', () => setRating(parseInt(btn.dataset.star, 10)));
   });
 
-  if (typeof firebase === 'undefined') {
-    listEl.innerHTML = '<p class="reviews-empty">Les avis ne sont pas disponibles pour le moment.</p>';
-    if (submitBtn) submitBtn.disabled = true;
-    console.warn('Avis : le SDK Firebase (compat) ne semble pas chargé.');
-    return;
-  }
-
   let reviewsRef;
   try {
-    const firebaseConfig = {
-      apiKey: 'AIzaSyCaGCtB23h1VKjJvnNlDMh3qzLsxAGtrSI',
-      authDomain: 'site-esport-vraie-version.firebaseapp.com',
-      projectId: 'site-esport-vraie-version',
-      storageBucket: 'site-esport-vraie-version.firebasestorage.app',
-      messagingSenderId: '255435160470',
-      appId: '1:255435160470:web:50acf8117b181cb0b57bb7'
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-
-    reviewsRef = firebase.firestore().collection('avis');
+    reviewsRef = ensureFirebaseApp().firestore().collection('avis');
   } catch (error) {
     // Une erreur d'initialisation Firebase (config invalide, Firestore non
     // activé côté console, etc.) ne doit affecter que la partie avis —
@@ -733,6 +739,234 @@ function initReviews() {
     }).catch((error) => {
       console.warn('Avis : envoi Firestore impossible', error);
       setStatus("Impossible d'envoyer ton avis pour le moment. Réessaie plus tard.", 'error');
+    }).finally(() => {
+      submitBtn.disabled = false;
+    });
+  });
+}
+
+/* ---------------------------------------------------------
+   13. Recherche de coéquipiers — LFG — Firebase Firestore (#lfg)
+   Même projet Firebase que les avis, collection distincte ('lfg').
+   Envoi + lecture en temps réel, tri du plus récent au plus ancien.
+--------------------------------------------------------- */
+function initLFG() {
+  const form = document.getElementById('lfg-form');
+  const listEl = document.getElementById('lfg-list');
+  if (!form || !listEl) return;
+
+  const pseudoInput = document.getElementById('lfg-pseudo');
+  const trophiesInput = document.getElementById('lfg-trophies');
+  const modeInput = document.getElementById('lfg-mode');
+  const contactInput = document.getElementById('lfg-contact');
+  const statusEl = document.getElementById('lfg-status');
+  const submitBtn = document.getElementById('lfg-submit-btn');
+  const countEl = document.getElementById('lfg-count');
+
+  const MODE_LABELS = {
+    '3v3': '3v3',
+    brawlball: 'Brawlball',
+    'coupe-etoiles': 'Coupe Stars',
+    duel: 'Duel',
+    autre: 'Autre'
+  };
+
+  // Modération légère, réalisable sans serveur : une annonce signalée
+  // plusieurs fois ou trop ancienne disparaît de l'affichage (elle reste
+  // en base — une vraie suppression nécessiterait une Cloud Function,
+  // voir la note fournie à part).
+  const REPORT_THRESHOLD = 3;
+  const MAX_AGE_DAYS = 14;
+  const REPORTED_IDS_KEY = 'brawlEsportFR.lfgReportedIds';
+
+  function getReportedIds() {
+    try {
+      const raw = localStorage.getItem(REPORTED_IDS_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function markAsReported(postId) {
+    try {
+      const ids = getReportedIds();
+      if (!ids.includes(postId)) {
+        ids.push(postId);
+        localStorage.setItem(REPORTED_IDS_KEY, JSON.stringify(ids));
+      }
+    } catch (e) {
+      // localStorage indisponible : le signalement fonctionne quand même,
+      // seul le garde-fou anti-double-clic local est perdu.
+    }
+  }
+
+  function setStatus(message, type) {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.className = 'review-status' + (type ? ` ${type}` : '');
+  }
+
+  let lfgRef;
+  try {
+    lfgRef = ensureFirebaseApp().firestore().collection('lfg');
+  } catch (error) {
+    console.warn('LFG : initialisation Firebase impossible', error);
+    listEl.innerHTML = '<p class="reviews-empty">Les annonces ne sont pas disponibles pour le moment.</p>';
+    if (submitBtn) submitBtn.disabled = true;
+    return;
+  }
+
+  function formatDate(timestamp) {
+    if (!timestamp || typeof timestamp.toDate !== 'function') return "à l'instant";
+    try {
+      return timestamp.toDate().toLocaleDateString('fr-FR', {
+        day: 'numeric', month: 'short', year: 'numeric'
+      });
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function renderLFG(snapshot) {
+    const now = Date.now();
+    const maxAgeMs = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const reportedIds = getReportedIds();
+
+    // On ne masque que ce qu'on peut évaluer avec certitude : une annonce
+    // dont l'horodatage serveur n'est pas encore résolu (venant tout juste
+    // d'être publiée en local) est toujours considérée comme récente.
+    const visibleDocs = snapshot.docs.filter(doc => {
+      const data = doc.data() || {};
+
+      const reportsCount = Number(data.reportsCount) || 0;
+      if (reportsCount >= REPORT_THRESHOLD) return false;
+
+      if (data.createdAt && typeof data.createdAt.toMillis === 'function') {
+        const ageMs = now - data.createdAt.toMillis();
+        if (ageMs > maxAgeMs) return false;
+      }
+
+      return true;
+    });
+
+    if (countEl) {
+      countEl.textContent = `${visibleDocs.length} annonce${visibleDocs.length > 1 ? 's' : ''}`;
+    }
+
+    if (visibleDocs.length === 0) {
+      listEl.innerHTML = '<p class="reviews-empty">Aucune annonce active pour le moment — sois le premier à en publier une !</p>';
+      return;
+    }
+
+    listEl.innerHTML = '';
+    visibleDocs.forEach(doc => {
+      const data = doc.data() || {};
+      const postId = doc.id;
+
+      const card = document.createElement('article');
+      card.className = 'review-card';
+
+      const head = document.createElement('div');
+      head.className = 'review-card-head';
+
+      // .textContent uniquement : tout ce qui vient d'un visiteur (pseudo,
+      // contact) doit rester du texte brut, jamais interprété comme HTML.
+      const author = document.createElement('span');
+      author.className = 'review-author';
+      author.textContent = String(data.pseudo || 'Anonyme').slice(0, 30);
+
+      const trophies = document.createElement('span');
+      trophies.className = 'lfg-trophies';
+      const safeTrophies = Math.max(0, Math.round(Number(data.trophees) || 0));
+      trophies.textContent = `🏆 ${safeTrophies.toLocaleString('fr-FR')}`;
+
+      const date = document.createElement('span');
+      date.className = 'review-date';
+      date.textContent = formatDate(data.createdAt);
+
+      head.appendChild(author);
+      head.appendChild(trophies);
+      head.appendChild(date);
+
+      const meta = document.createElement('div');
+      meta.className = 'lfg-meta';
+
+      const modeTag = document.createElement('span');
+      modeTag.className = 'lfg-mode-tag';
+      modeTag.textContent = MODE_LABELS[data.mode] || String(data.mode || 'Autre').slice(0, 20);
+
+      const contact = document.createElement('span');
+      contact.className = 'lfg-contact';
+      contact.textContent = `Contact : ${String(data.contact || '').slice(0, 40)}`;
+
+      meta.appendChild(modeTag);
+      meta.appendChild(contact);
+
+      const reportBtn = document.createElement('button');
+      reportBtn.type = 'button';
+      reportBtn.className = 'lfg-report-btn';
+      const alreadyReported = reportedIds.includes(postId);
+      reportBtn.textContent = alreadyReported ? 'Signalé' : 'Signaler';
+      reportBtn.disabled = alreadyReported;
+
+      reportBtn.addEventListener('click', () => {
+        reportBtn.disabled = true;
+        reportBtn.textContent = 'Signalé';
+        markAsReported(postId);
+
+        lfgRef.doc(postId).update({
+          reportsCount: firebase.firestore.FieldValue.increment(1)
+        }).catch((error) => {
+          console.warn('LFG : signalement impossible', error);
+        });
+      });
+
+      card.appendChild(head);
+      card.appendChild(meta);
+      card.appendChild(reportBtn);
+      listEl.appendChild(card);
+    });
+  }
+
+  lfgRef.orderBy('createdAt', 'desc').onSnapshot(
+    renderLFG,
+    (error) => {
+      console.warn('LFG : lecture Firestore impossible', error);
+      listEl.innerHTML = '<p class="reviews-empty">Impossible de charger les annonces pour le moment.</p>';
+    }
+  );
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const pseudo = (pseudoInput.value || '').trim();
+    const trophees = parseInt(trophiesInput.value, 10);
+    const mode = modeInput.value;
+    const contact = (contactInput.value || '').trim();
+
+    if (!pseudo || !mode || !contact || !Number.isFinite(trophees) || trophees < 0 || trophees > 500000) {
+      setStatus('Merci de renseigner un pseudo, un nombre de trophées valide, un mode et un contact.', 'error');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    setStatus('Publication en cours…', 'loading');
+
+    lfgRef.add({
+      pseudo: pseudo.slice(0, 30),
+      trophees: trophees,
+      mode: mode,
+      contact: contact.slice(0, 40),
+      reportsCount: 0,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      form.reset();
+      setStatus('Merci, ton annonce a bien été publiée !', 'success');
+    }).catch((error) => {
+      console.warn('LFG : envoi Firestore impossible', error);
+      setStatus("Impossible de publier ton annonce pour le moment. Réessaie plus tard.", 'error');
     }).finally(() => {
       submitBtn.disabled = false;
     });
