@@ -335,6 +335,106 @@ section[id] { scroll-margin-top: 84px; }
 .action-card h3 { font-size: 17px; margin-bottom: 6px; }
 .action-card p { font-size: 14px; margin-bottom: 0; }
 
+/* =========================
+   PARCOURS DU JOUEUR
+========================= */
+.parcours-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 44px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+.parcours-stepper-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 8px 16px 8px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.parcours-stepper-node:hover { border-color: var(--primary); transform: translateY(-2px); }
+.parcours-stepper-node .badge {
+  width: 28px; height: 28px;
+  flex-shrink: 0;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: var(--primary);
+  color: #16110A;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono); font-weight: 700; font-size: 11px;
+}
+.parcours-stepper-node span:last-child {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+.parcours-stepper-arrow { color: var(--border); font-size: 15px; flex-shrink: 0; }
+
+.parcours-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+.parcours-card { display: flex; flex-direction: column; }
+.parcours-step-tag {
+  align-self: flex-start;
+  font-family: var(--ff-mono);
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(255,176,32,.1);
+  border: 1px solid rgba(255,176,32,.3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.parcours-card h3 { font-size: 21px; margin-bottom: 8px; }
+.parcours-objective {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.parcours-list { margin-bottom: 18px; }
+.parcours-list li {
+  position: relative;
+  padding: 7px 0 7px 20px;
+  font-size: 14px;
+  color: var(--text-light);
+  border-bottom: 1px dashed var(--border);
+}
+.parcours-list li:last-child { border-bottom: none; }
+.parcours-list li::before {
+  content: "→";
+  position: absolute; left: 0; top: 7px;
+  color: var(--secondary);
+  font-size: 12px;
+}
+.parcours-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.parcours-tool-chip {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--secondary);
+  background: rgba(61,139,255,.1);
+  border: 1px solid rgba(61,139,255,.28);
+  padding: 5px 12px;
+  border-radius: 999px;
+  transition: border-color .15s ease, color .15s ease;
+}
+.parcours-tool-chip:hover { border-color: var(--secondary); color: var(--text-light); }
+.parcours-cta { margin-top: auto; align-self: flex-start; }
+
 .guide-card { display: flex; flex-direction: column; height: 100%; }
 .guide-tag {
   align-self: flex-start;
@@ -1128,13 +1228,15 @@ section[id] { scroll-margin-top: 84px; }
   }
   .nav-links.mobile-open a { width: 100%; padding: 12px 0; border-bottom: 1px solid var(--border); }
   .nav-links.mobile-open a:last-child { border-bottom: none; }
-  .grid-3, .grid-4, .grid-2, .compare, .footer-grid { grid-template-columns: 1fr; }
+  .grid-3, .grid-4, .grid-2, .compare, .footer-grid, .parcours-grid { grid-template-columns: 1fr; }
   .section { padding: 64px 0; }
   .cta-banner { padding: 44px 24px; }
   .numbered-block { flex-direction: column; gap: 12px; }
   .routine-generator { padding: 24px 20px; }
   .quiz-card { padding: 24px 20px; }
   .lfg-form-row { grid-template-columns: 1fr; gap: 0; }
+  .parcours-card { padding: 24px 20px; }
+  .parcours-stepper-node span:last-child { font-size: 12.5px; }
 
   /* Roadmap "01-05" du hero : évite le chevauchement avec les boutons CTA.
      Les décalages "bottom" d'origine sont pensés pour un conteneur de

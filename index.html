@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brawl Esport FR | Se lancer dans l'e-sport Brawl Stars</title>
-<meta name="description" content="Guides, conseils et ressources francophones pour passer du jeu classique à la compétition sur Brawl Stars : débuter, trouver une équipe, participer à des tournois.">
+<title>Brawl Esport FR | Guide français pour l'esport Brawl Stars</title>
+<meta name="description" content="Le guide français pour entrer et progresser dans l'esport Brawl Stars : progression individuelle, recherche d'équipe et préparation aux tournois, étape par étape.">
 <meta property="og:title" content="Brawl Esport FR">
 <meta property="og:site_name" content="Brawl Esport FR">
-<meta property="og:description" content="Guides et ressources pour se lancer dans l'e-sport Brawl Stars.">
+<meta property="og:description" content="Le guide français pour entrer et progresser dans l'esport Brawl Stars, étape par étape.">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="style.css">
@@ -46,10 +46,10 @@
     <div class="container">
       <div class="hero-text">
         <span class="hero-eyebrow"><span class="dot"></span>Projet indépendant · Communauté FR</span>
-        <h1>Tu veux te lancer dans l'e-sport Brawl Stars ?</h1>
-        <p class="lead">Guides, conseils et ressources pour passer du jeu classique à la compétition.</p>
+        <h1>Le guide français pour entrer et progresser dans l'esport Brawl Stars</h1>
+        <p class="lead">De tes premiers entraînements à tes premières compétitions, construis ton parcours compétitif étape par étape.</p>
         <div class="hero-actions">
-          <a href="#debuter" class="btn btn-primary">Commencer maintenant</a>
+          <a href="#parcours" class="btn btn-primary">Commencer maintenant</a>
           <a href="#guides" class="btn btn-outline">Voir les guides</a>
         </div>
       </div>
@@ -63,69 +63,103 @@
     </div>
   </section>
 
-  <!-- 3 ETAPES -->
-  <section class="section section-alt">
+  <!-- =========================================================
+       PARCOURS — Ton parcours vers l'esport
+       (remplace les anciennes sections "3 étapes" et
+       "Que veux-tu faire ?", dont c'est une version plus complète)
+  ========================================================= -->
+  <section id="parcours" class="section section-alt">
     <div class="container">
-      <div class="eyebrow">// Le parcours</div>
+      <div class="eyebrow">// Ton parcours</div>
       <div class="section-head">
-        <h2>Commencer en 3 étapes</h2>
-        <p>Pas besoin d'être déjà un joueur professionnel. Voici l'ordre dans lequel construire ta progression.</p>
+        <h2>Ton parcours vers l'esport</h2>
+        <p>Le guide français pour progresser dans l'esport Brawl Stars. Repère où tu en es, et ce que tu peux faire dès maintenant.</p>
       </div>
-      <div class="grid-3">
-        <div class="card step-card reveal">
-          <span class="badge">01</span>
-          <h3>Comprendre</h3>
-          <p>Comprendre les bases de l'e-sport Brawl Stars : comment il fonctionne et ce qu'il attend d'un joueur.</p>
-        </div>
-        <div class="card step-card reveal">
-          <span class="badge">02</span>
-          <h3>Progresser</h3>
-          <p>Améliorer son niveau individuel et son jeu en équipe grâce à un entraînement régulier et ciblé.</p>
-        </div>
-        <div class="card step-card reveal">
-          <span class="badge">03</span>
-          <h3>Compétir</h3>
-          <p>Trouver une équipe et participer à des compétitions pour mettre ta progression à l'épreuve.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- QUE VEUX-TU FAIRE -->
-  <section class="section">
-    <div class="container">
-      <div class="eyebrow">// Par où commencer</div>
-      <div class="section-head">
-        <h2>Que veux-tu faire ?</h2>
-        <p>Choisis ton point d'entrée, chaque carte t'emmène vers la section correspondante.</p>
-      </div>
-      <div class="grid-4">
-        <a href="#debuter" class="card action-card reveal">
-          <span class="icon">🎮</span>
-          <h3>Commencer l'e-sport</h3>
-          <p>Les bases pour passer du jeu classique à la compétition.</p>
-        </a>
-        <a href="#equipes" class="card action-card reveal">
-          <span class="icon">👥</span>
-          <h3>Trouver une équipe</h3>
-          <p>Conseils pour rejoindre ou créer une équipe.</p>
-        </a>
-        <a href="#competitions" class="card action-card reveal">
-          <span class="icon">🏆</span>
-          <h3>Participer à des compétitions</h3>
-          <p>Comprendre le fonctionnement des tournois.</p>
-        </a>
-        <a href="#guides" class="card action-card reveal">
-          <span class="icon">📚</span>
-          <h3>Progresser</h3>
-          <p>Tous les guides pour améliorer ton niveau.</p>
-        </a>
+      <nav class="parcours-stepper" aria-label="Étapes du parcours">
+        <a href="#step-1" class="parcours-stepper-node"><span class="badge">01</span><span>Je débute</span></a>
+        <span class="parcours-stepper-arrow" aria-hidden="true">→</span>
+        <a href="#step-2" class="parcours-stepper-node"><span class="badge">02</span><span>Mon équipe</span></a>
+        <span class="parcours-stepper-arrow" aria-hidden="true">→</span>
+        <a href="#step-3" class="parcours-stepper-node"><span class="badge">03</span><span>Équipe active</span></a>
+        <span class="parcours-stepper-arrow" aria-hidden="true">→</span>
+        <a href="#step-4" class="parcours-stepper-node"><span class="badge">04</span><span>Compétition</span></a>
+      </nav>
+
+      <div class="parcours-grid">
+
+        <article id="step-1" class="card parcours-card reveal">
+          <span class="parcours-step-tag">Étape 01</span>
+          <h3>Je débute</h3>
+          <p class="parcours-objective">Comprendre l'esport Brawl Stars et commencer à progresser.</p>
+          <ul class="parcours-list">
+            <li>Comprendre ce qu'est réellement l'esport Brawl Stars</li>
+            <li>Travailler ton niveau individuel chaque semaine</li>
+            <li>Apprendre les bases du jeu compétitif : maps, draft, décision</li>
+            <li>Faire tes premiers entraînements sérieux</li>
+          </ul>
+          <div class="parcours-tools">
+            <a href="#routine" class="parcours-tool-chip">🎯 Générateur de routine</a>
+            <a href="#guides" class="parcours-tool-chip">📚 Guides débutant</a>
+          </div>
+          <a href="#debuter" class="btn btn-primary parcours-cta">Commencer ma progression</a>
+        </article>
+
+        <article id="step-2" class="card parcours-card reveal">
+          <span class="parcours-step-tag">Étape 02</span>
+          <h3>Je cherche une équipe</h3>
+          <p class="parcours-objective">Passer du joueur individuel au jeu en équipe.</p>
+          <ul class="parcours-list">
+            <li>Comprendre les différents rôles en équipe</li>
+            <li>Trouver des coéquipiers réguliers</li>
+            <li>Savoir quoi rechercher chez une équipe</li>
+            <li>Apprendre à communiquer efficacement en match</li>
+          </ul>
+          <div class="parcours-tools">
+            <a href="#quiz" class="parcours-tool-chip">🧭 Quiz de rôle</a>
+            <a href="#lfg" class="parcours-tool-chip">👥 Recherche de coéquipiers</a>
+          </div>
+          <a href="#quiz" class="btn btn-primary parcours-cta">Trouver mon profil</a>
+        </article>
+
+        <article id="step-3" class="card parcours-card reveal">
+          <span class="parcours-step-tag">Étape 03</span>
+          <h3>J'ai une équipe</h3>
+          <p class="parcours-objective">Fonctionner comme une vraie équipe compétitive.</p>
+          <ul class="parcours-list">
+            <li>Définir clairement les rôles de chacun</li>
+            <li>Organiser des sessions d'entraînement régulières</li>
+            <li>Analyser vos erreurs après chaque match</li>
+            <li>Jouer des matchs amicaux pour tester vos stratégies</li>
+          </ul>
+          <div class="parcours-tools">
+            <a href="#equipes" class="parcours-tool-chip">✅ Checklist équipe</a>
+          </div>
+          <a href="#equipes" class="btn btn-primary parcours-cta">Préparer mon équipe</a>
+        </article>
+
+        <article id="step-4" class="card parcours-card reveal">
+          <span class="parcours-step-tag">Étape 04</span>
+          <h3>Je veux compétitionner</h3>
+          <p class="parcours-objective">Passer aux compétitions et progresser dans la durée.</p>
+          <ul class="parcours-list">
+            <li>Comprendre comment fonctionne un tournoi</li>
+            <li>Vérifier les conditions d'inscription avant de te lancer</li>
+            <li>Te préparer avant chaque compétition</li>
+            <li>Continuer à progresser après chaque tournoi</li>
+          </ul>
+          <div class="parcours-tools">
+            <a href="#competitions" class="parcours-tool-chip">📋 Checklist tournoi</a>
+          </div>
+          <a href="#competitions" class="btn btn-primary parcours-cta">Préparer mon premier tournoi</a>
+        </article>
+
       </div>
     </div>
   </section>
 
   <!-- GUIDES POPULAIRES (aperçu) -->
-  <section class="section section-alt">
+  <section class="section">
     <div class="container">
       <div class="eyebrow">// Guides populaires</div>
       <div class="section-head">
@@ -1105,6 +1139,7 @@
       <div class="footer-col">
         <h4>Navigation</h4>
         <ul>
+          <li><a href="#parcours">Ton parcours</a></li>
           <li><a href="#debuter">Débuter</a></li>
           <li><a href="#routine">Routine</a></li>
           <li><a href="#equipes">Équipes</a></li>
