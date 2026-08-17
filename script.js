@@ -274,7 +274,9 @@ function initNavScrollSpy() {
 
 /* ---------------------------------------------------------
    9. Générateur de routine d'entraînement (#routine)
-   Calcule un plan concret selon le temps et l'objectif choisis.
+   Chaque combinaison durée × objectif a son propre contenu
+   (pas une simple règle de trois sur les mêmes 3 blocs) :
+   plus la session est longue, plus il y a d'étapes distinctes.
 --------------------------------------------------------- */
 function initRoutineGenerator() {
   const timeChips = document.querySelectorAll('[data-routine-time]');
@@ -285,34 +287,94 @@ function initRoutineGenerator() {
 
   const GOAL_LABELS = {
     mecanique: 'Aim / mécanique',
-    draft: 'Draft / cartes',
-    equipe: 'Jeu en équipe & communication'
+    strategie: 'Stratégie',
+    equipe: 'Équipe & communication',
+    competition: 'Compétition'
   };
 
-  // Chaque objectif = une suite de blocs avec leur poids (ratio) dans le temps total.
   const ROUTINES = {
     mecanique: {
-      tip: 'Répète cette routine 3 fois par semaine pour voir une vraie progression sur ta visée.',
-      steps: [
-        { label: 'Chauffe en entraînement libre : viser sans réfléchir', ratio: 0.25 },
-        { label: 'Ranked ou amicale, focus visée et esquive', ratio: 0.45 },
-        { label: 'Revoir 2 replays : noter 1 erreur de placement à corriger', ratio: 0.30 }
+      tip: 'Répète cette routine 3x/semaine pour voir une vraie progression sur ta visée.',
+      30: [
+        { title: 'Échauffement', time: 10, objectif: 'Débloquer les réflexes.', aFaire: 'Joue 2 parties en te concentrant uniquement sur tes déplacements et tes esquives, ignore le score.' },
+        { title: 'Précision ciblée', time: 15, objectif: 'Fiabiliser ta visée.', aFaire: "Ne vise que les cibles mobiles ; annule ton tir si la cible n'est pas certaine." },
+        { title: 'Auto-évaluation', time: 5, objectif: 'Repérer une erreur récurrente.', aFaire: 'Repense à ta dernière partie et note 1 moment où tu as pris des dégâts évitables.' }
+      ],
+      60: [
+        { title: 'Échauffement', time: 10, objectif: 'Débloquer les réflexes.', aFaire: 'Joue 2 parties en te concentrant uniquement sur tes déplacements et tes esquives.' },
+        { title: 'Précision ciblée', time: 15, objectif: 'Fiabiliser ta visée.', aFaire: "Ne vise que les cibles mobiles ; annule ton tir si la cible n'est pas certaine." },
+        { title: 'Interactions & contres', time: 20, objectif: 'Mieux gérer les duels 1v1.', aFaire: "Joue 3-4 parties en travaillant ta distance d'engagement face à chaque type de brawler (courte/moyenne/longue portée)." },
+        { title: 'Analyse', time: 15, objectif: 'Transformer la session en progrès mesurable.', aFaire: 'Revois 1 replay, identifie 1 mauvais placement et note comment tu l\'aurais évité.' }
+      ],
+      120: [
+        { title: 'Échauffement', time: 15, objectif: 'Débloquer les réflexes.', aFaire: 'Joue 3 parties en te concentrant uniquement sur tes déplacements et tes esquives.' },
+        { title: 'Précision ciblée', time: 20, objectif: 'Fiabiliser ta visée.', aFaire: "Ne vise que les cibles mobiles ; annule ton tir si la cible n'est pas certaine." },
+        { title: 'Interactions & contres', time: 25, objectif: 'Mieux gérer les duels 1v1.', aFaire: "Travaille ta distance d'engagement face à chaque type de brawler." },
+        { title: 'Matchs ciblés', time: 30, objectif: 'Appliquer en conditions réelles.', aFaire: 'Joue 5-6 parties en appliquant uniquement visée + distance d\'engagement, sans te soucier du résultat.' },
+        { title: 'Analyse & débrief', time: 10, objectif: 'Capitaliser sur la session.', aFaire: 'Note 2 réussites et 1 point à retravailler la prochaine fois.' }
       ]
     },
-    draft: {
-      tip: 'Garde une note perso avec ton meilleur pick par carte : elle te sert à chaque session.',
-      steps: [
-        { label: 'Revoir les cartes du moment : bushs, zones à risque', ratio: 0.30 },
-        { label: 'Simuler 3 drafts contre un ami ou seul, à tête reposée', ratio: 0.45 },
-        { label: 'Noter le meilleur pick pour chaque carte jouée', ratio: 0.25 }
+    strategie: {
+      tip: 'Note tes décisions clés après chaque session : le pattern se voit après 3-4 sessions.',
+      30: [
+        { title: 'Lecture de carte', time: 10, objectif: 'Mémoriser les zones clés.', aFaire: 'Observe une carte et identifie ses 3 bushs/zones à risque avant de jouer dessus.' },
+        { title: 'Placement', time: 15, objectif: 'Rester en position favorable.', aFaire: "Joue 2 parties en te forçant à toujours avoir une voie de retraite avant d'engager." },
+        { title: 'Bilan rapide', time: 5, objectif: 'Identifier une erreur de décision.', aFaire: 'Repense à un moment où tu t\'es engagé trop tôt ou trop tard.' }
+      ],
+      60: [
+        { title: 'Lecture de carte', time: 10, objectif: 'Mémoriser les zones clés.', aFaire: 'Identifie les 3 bushs/zones à risque de la carte avant de jouer dessus.' },
+        { title: 'Placement', time: 15, objectif: 'Rester en position favorable.', aFaire: "Force-toi à toujours avoir une voie de retraite avant d'engager." },
+        { title: 'Prise de décision', time: 20, objectif: 'Mieux évaluer les rapports de force.', aFaire: 'Avant chaque engagement, évalue si tu es en supériorité numérique ou de zone.' },
+        { title: 'Analyse', time: 15, objectif: 'Relier décisions et résultats.', aFaire: 'Revois 1 partie et identifie 1 décision qui a changé l\'issue du match.' }
+      ],
+      120: [
+        { title: 'Lecture de carte', time: 15, objectif: 'Mémoriser les zones clés.', aFaire: 'Identifie les zones à risque de 2 cartes différentes.' },
+        { title: 'Placement', time: 20, objectif: 'Rester en position favorable.', aFaire: "Force-toi à toujours avoir une voie de retraite avant d'engager." },
+        { title: 'Prise de décision', time: 25, objectif: 'Mieux évaluer les rapports de force.', aFaire: 'Avant chaque engagement, évalue si tu es en supériorité numérique ou de zone.' },
+        { title: 'Matchs ciblés', time: 30, objectif: 'Appliquer en conditions réelles.', aFaire: 'Joue 5-6 parties en te concentrant uniquement sur placement et décisions.' },
+        { title: 'Analyse & débrief', time: 10, objectif: 'Consolider les apprentissages.', aFaire: 'Note 2 décisions réussies et 1 situation à mieux gérer la prochaine fois.' }
       ]
     },
     equipe: {
-      tip: 'Une session avec des callouts clairs vaut mieux que trois sessions silencieuses.',
-      steps: [
-        { label: 'Échauffement en duo : bouger et viser ensemble', ratio: 0.20 },
-        { label: 'Session en équipe avec callouts à voix haute', ratio: 0.55 },
-        { label: 'Débrief vocal : 1 point à corriger par joueur', ratio: 0.25 }
+      tip: 'À faire à 2 ou 3 : cette routine perd tout son intérêt en solo.',
+      30: [
+        { title: 'Échauffement en duo', time: 10, objectif: 'Synchroniser vos déplacements.', aFaire: 'Jouez 2 parties en restant toujours à portée de vue l\'un de l\'autre.' },
+        { title: 'Annonces courtes', time: 15, objectif: 'Automatiser la communication.', aFaire: 'À chaque échange, annonce : ta position, ton état (vie/munitions), ton intention.' },
+        { title: 'Bilan rapide', time: 5, objectif: 'Repérer un trou de communication.', aFaire: 'Identifiez ensemble 1 moment où l\'un de vous a manqué une info importante.' }
+      ],
+      60: [
+        { title: 'Échauffement en duo', time: 10, objectif: 'Synchroniser vos déplacements.', aFaire: 'Jouez 2 parties en restant à portée de vue l\'un de l\'autre.' },
+        { title: 'Annonces courtes', time: 15, objectif: 'Automatiser la communication.', aFaire: 'Annonce à chaque fois : position, état, intention.' },
+        { title: 'Décisions collectives', time: 20, objectif: 'Décider ensemble, pas seul.', aFaire: 'Avant chaque engagement à 2-3, mettez-vous d\'accord à voix haute sur qui engage et qui couvre.' },
+        { title: 'Débrief d\'équipe', time: 15, objectif: 'Progresser ensemble.', aFaire: 'Chacun donne 1 point positif et 1 point à améliorer pour l\'autre, sans jugement.' }
+      ],
+      120: [
+        { title: 'Échauffement en duo', time: 15, objectif: 'Synchroniser vos déplacements.', aFaire: 'Restez à portée de vue l\'un de l\'autre sur 3 parties.' },
+        { title: 'Annonces courtes', time: 20, objectif: 'Automatiser la communication.', aFaire: 'Annonce à chaque fois : position, état, intention.' },
+        { title: 'Décisions collectives', time: 25, objectif: 'Décider ensemble, pas seul.', aFaire: 'Mettez-vous d\'accord à voix haute avant chaque engagement : qui engage, qui couvre.' },
+        { title: 'Matchs ciblés en équipe', time: 30, objectif: 'Jouer en conditions de match.', aFaire: 'Enchaînez 5-6 parties en appliquant annonces et décisions collectives, sans changer de stratégie en cours de partie.' },
+        { title: 'Débrief d\'équipe', time: 10, objectif: 'Capitaliser sur la session.', aFaire: 'Notez ensemble 1 point fort de l\'équipe et 1 axe de travail pour la prochaine session.' }
+      ]
+    },
+    competition: {
+      tip: 'Reproduis les conditions d\'un vrai match dès l\'entraînement : c\'est ça qui prépare vraiment.',
+      30: [
+        { title: 'Échauffement rapide', time: 10, objectif: 'Arriver concentré.', aFaire: 'Joue 2 parties amicales sans enjeu, juste pour prendre tes repères.' },
+        { title: 'Matchs sérieux', time: 15, objectif: 'Te mettre en condition de match.', aFaire: 'Joue tes parties comme si chacune comptait : pas de brawler test, pas de mode détente.' },
+        { title: 'Débrief express', time: 5, objectif: 'Repartir avec 1 point clair.', aFaire: 'Note la seule chose à corriger avant ton prochain match.' }
+      ],
+      60: [
+        { title: 'Échauffement', time: 10, objectif: 'Arriver concentré.', aFaire: 'Joue 2 parties amicales sans enjeu.' },
+        { title: 'Préparation', time: 10, objectif: 'Éliminer les incertitudes avant de jouer.', aFaire: 'Relis le format du tournoi/de la session et confirme la composition d\'équipe si tu joues en groupe.' },
+        { title: 'Matchs sérieux', time: 25, objectif: 'Performer en conditions réelles.', aFaire: 'Joue avec l\'exigence d\'un vrai match, sans changer de stratégie en cours de partie.' },
+        { title: 'Analyse & débrief', time: 15, objectif: 'Transformer chaque match en progrès.', aFaire: 'Pour chaque défaite, note 1 cause claire ; pour chaque victoire, note 1 point à reproduire.' }
+      ],
+      120: [
+        { title: 'Échauffement', time: 15, objectif: 'Arriver concentré.', aFaire: 'Joue 3 parties amicales sans enjeu.' },
+        { title: 'Préparation', time: 15, objectif: 'Éliminer les incertitudes avant de jouer.', aFaire: 'Relis règles/format, vérifie composition d\'équipe et matériel (connexion, batterie).' },
+        { title: 'Matchs sérieux', time: 45, objectif: 'Enchaîner en conditions de compétition.', aFaire: 'Joue un maximum de parties sérieuses sans changer de stratégie, comme si chacune comptait pour un classement.' },
+        { title: 'Analyse', time: 15, objectif: 'Objectiver la session.', aFaire: 'Liste chaque défaite avec sa cause principale.' },
+        { title: 'Débrief final', time: 10, objectif: 'Repartir avec un plan clair.', aFaire: 'Identifie 1 point fort à garder et 1 axe de travail pour ta prochaine session.' }
       ]
     }
   };
@@ -338,23 +400,6 @@ function initRoutineGenerator() {
     selectedGoal = chip.dataset.routineGoal || 'mecanique';
   });
 
-  // Répartit le temps total sur les blocs de la routine, arrondi à 5 min,
-  // en ajustant le dernier bloc pour que le total tombe juste.
-  function buildSteps(totalMinutes, goal) {
-    const routine = ROUTINES[goal];
-    if (!routine) return [];
-
-    const steps = routine.steps.map(step => ({
-      label: step.label,
-      minutes: Math.max(5, Math.round((totalMinutes * step.ratio) / 5) * 5)
-    }));
-
-    const sumExceptLast = steps.slice(0, -1).reduce((sum, s) => sum + s.minutes, 0);
-    steps[steps.length - 1].minutes = Math.max(5, totalMinutes - sumExceptLast);
-
-    return steps;
-  }
-
   function formatTime(minutes) {
     if (minutes === 60) return '1h';
     if (minutes === 120) return '2h';
@@ -363,25 +408,43 @@ function initRoutineGenerator() {
 
   function renderResult() {
     const routine = ROUTINES[selectedGoal];
-    const steps = buildSteps(selectedTime, selectedGoal);
+    const steps = (routine && routine[selectedTime]) || [];
     const timeLabel = formatTime(selectedTime);
 
-    const stepsHtml = steps.map(step => `
+    const stepsHtml = steps.map((step, index) => `
       <div class="routine-step">
-        <span class="routine-step-time">${step.minutes} min</span>
-        <span class="routine-step-label">${step.label}</span>
+        <label class="check-item routine-step-check">
+          <input type="checkbox" class="routine-step-checkbox">
+          <span class="check-box"></span>
+        </label>
+        <div class="routine-step-body">
+          <div class="routine-step-head">
+            <span class="routine-step-num">${String(index + 1).padStart(2, '0')} — ${step.title.toUpperCase()}</span>
+            <span class="routine-step-time">⏱ ${step.time} min</span>
+          </div>
+          <p class="routine-step-objectif"><strong>Objectif :</strong> ${step.objectif}</p>
+          <p class="routine-step-afaire"><strong>À faire :</strong> ${step.aFaire}</p>
+        </div>
       </div>
     `).join('');
 
     resultEl.innerHTML = `
       <div class="routine-result-head">
-        <h3 class="routine-result-title">Routine ${timeLabel} — ${GOAL_LABELS[selectedGoal]}</h3>
+        <h3 class="routine-result-title">Ta session — ${timeLabel} — ${GOAL_LABELS[selectedGoal]}</h3>
         <span class="routine-result-total">${timeLabel} au total</span>
       </div>
       ${stepsHtml}
       <p class="routine-tip">💡 ${routine.tip}</p>
     `;
     resultEl.classList.add('show');
+
+    // Cocher une étape la barre visuellement, en s'appuyant sur le même
+    // style que la checklist tournoi — aucune nouvelle règle CSS requise.
+    resultEl.querySelectorAll('.routine-step-checkbox').forEach(box => {
+      box.addEventListener('change', () => {
+        box.closest('.routine-step').classList.toggle('done', box.checked);
+      });
+    });
 
     // Défilement fluide vers le résultat : l'utilisateur n'a pas à chercher
     // la routine générée, surtout sur mobile où elle sort de l'écran visible.
@@ -758,10 +821,12 @@ function initLFG() {
   const pseudoInput = document.getElementById('lfg-pseudo');
   const trophiesInput = document.getElementById('lfg-trophies');
   const modeInput = document.getElementById('lfg-mode');
+  const objectifInput = document.getElementById('lfg-objectif');
   const contactInput = document.getElementById('lfg-contact');
   const statusEl = document.getElementById('lfg-status');
   const submitBtn = document.getElementById('lfg-submit-btn');
   const countEl = document.getElementById('lfg-count');
+  const filterChips = document.querySelectorAll('.lfg-filter-chip');
 
   const MODE_LABELS = {
     '3v3': '3v3',
@@ -771,6 +836,13 @@ function initLFG() {
     autre: 'Autre'
   };
 
+  const OBJECTIF_LABELS = {
+    duo: 'Duo/trio régulier',
+    'equipe-compet': 'Équipe compétitive',
+    session: 'Session ponctuelle',
+    coaching: 'Coaching / apprentissage'
+  };
+
   // Modération légère, réalisable sans serveur : une annonce signalée
   // plusieurs fois ou trop ancienne disparaît de l'affichage (elle reste
   // en base — une vraie suppression nécessiterait une Cloud Function,
@@ -778,6 +850,9 @@ function initLFG() {
   const REPORT_THRESHOLD = 3;
   const MAX_AGE_DAYS = 14;
   const REPORTED_IDS_KEY = 'brawlEsportFR.lfgReportedIds';
+
+  let lastSnapshot = null;
+  let activeModeFilter = 'toutes';
 
   function getReportedIds() {
     try {
@@ -829,7 +904,19 @@ function initLFG() {
     }
   }
 
+  // Filtre par mode câblé comme celui des guides : un seul chip actif,
+  // ré-affiche simplement la dernière liste reçue de Firestore.
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeModeFilter = chip.dataset.lfgFilter || 'toutes';
+      if (lastSnapshot) renderLFG(lastSnapshot);
+    });
+  });
+
   function renderLFG(snapshot) {
+    lastSnapshot = snapshot;
     const now = Date.now();
     const maxAgeMs = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
     const reportedIds = getReportedIds();
@@ -848,6 +935,8 @@ function initLFG() {
         if (ageMs > maxAgeMs) return false;
       }
 
+      if (activeModeFilter !== 'toutes' && data.mode !== activeModeFilter) return false;
+
       return true;
     });
 
@@ -856,7 +945,7 @@ function initLFG() {
     }
 
     if (visibleDocs.length === 0) {
-      listEl.innerHTML = '<p class="reviews-empty">Aucune annonce active pour le moment — sois le premier à en publier une !</p>';
+      listEl.innerHTML = '<p class="reviews-empty">Aucune annonce active pour ce filtre — sois le premier à en publier une !</p>';
       return;
     }
 
@@ -897,12 +986,19 @@ function initLFG() {
       modeTag.className = 'lfg-mode-tag';
       modeTag.textContent = MODE_LABELS[data.mode] || String(data.mode || 'Autre').slice(0, 20);
 
+      const objectifTag = document.createElement('span');
+      objectifTag.className = 'lfg-objectif-tag';
+      objectifTag.textContent = OBJECTIF_LABELS[data.objectif] || String(data.objectif || '').slice(0, 24);
+
+      meta.appendChild(modeTag);
+      if (data.objectif) meta.appendChild(objectifTag);
+
+      const contactRow = document.createElement('div');
+      contactRow.className = 'lfg-contact-row';
+
       const contact = document.createElement('span');
       contact.className = 'lfg-contact';
       contact.textContent = `Contact : ${String(data.contact || '').slice(0, 40)}`;
-
-      meta.appendChild(modeTag);
-      meta.appendChild(contact);
 
       const reportBtn = document.createElement('button');
       reportBtn.type = 'button';
@@ -923,9 +1019,12 @@ function initLFG() {
         });
       });
 
+      contactRow.appendChild(contact);
+      contactRow.appendChild(reportBtn);
+
       card.appendChild(head);
       card.appendChild(meta);
-      card.appendChild(reportBtn);
+      card.appendChild(contactRow);
       listEl.appendChild(card);
     });
   }
@@ -944,10 +1043,11 @@ function initLFG() {
     const pseudo = (pseudoInput.value || '').trim();
     const trophees = parseInt(trophiesInput.value, 10);
     const mode = modeInput.value;
+    const objectif = objectifInput.value;
     const contact = (contactInput.value || '').trim();
 
-    if (!pseudo || !mode || !contact || !Number.isFinite(trophees) || trophees < 0 || trophees > 500000) {
-      setStatus('Merci de renseigner un pseudo, un nombre de trophées valide, un mode et un contact.', 'error');
+    if (!pseudo || !mode || !objectif || !contact || !Number.isFinite(trophees) || trophees < 0 || trophees > 500000) {
+      setStatus('Merci de renseigner un pseudo, un nombre de trophées valide, un mode, un objectif et un contact.', 'error');
       return;
     }
 
@@ -958,6 +1058,7 @@ function initLFG() {
       pseudo: pseudo.slice(0, 30),
       trophees: trophees,
       mode: mode,
+      objectif: objectif,
       contact: contact.slice(0, 40),
       reportsCount: 0,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
