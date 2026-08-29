@@ -820,21 +820,16 @@ function initLFG() {
 
   const pseudoInput = document.getElementById('lfg-pseudo');
   const trophiesInput = document.getElementById('lfg-trophies');
-  const modeInput = document.getElementById('lfg-mode');
   const objectifInput = document.getElementById('lfg-objectif');
+  const searchInput = document.getElementById('lfg-search');
+  const searchCountEl = document.getElementById('lfg-search-count');
   const contactInput = document.getElementById('lfg-contact');
   const statusEl = document.getElementById('lfg-status');
   const submitBtn = document.getElementById('lfg-submit-btn');
   const countEl = document.getElementById('lfg-count');
   const filterChips = document.querySelectorAll('.lfg-filter-chip');
 
-  const MODE_LABELS = {
-    '3v3': '3v3',
-    brawlball: 'Brawlball',
-    'coupe-etoiles': 'Coupe Stars',
-    duel: 'Duel',
-    autre: 'Autre'
-  };
+  const SEARCH_MAX_LENGTH = 300;
 
   const OBJECTIF_LABELS = {
     duo: 'Duo/trio régulier',
@@ -852,7 +847,16 @@ function initLFG() {
   const REPORTED_IDS_KEY = 'brawlEsportFR.lfgReportedIds';
 
   let lastSnapshot = null;
-  let activeModeFilter = 'toutes';
+  let activeObjectifFilter = 'toutes';
+
+  // Compteur de caractères en direct pour le champ de recherche libre.
+  if (searchInput && searchCountEl) {
+    searchInput.addEventListener('input', () => {
+      const length = searchInput.value.length;
+      searchCountEl.textContent = `${length} / ${SEARCH_MAX_LENGTH}`;
+      searchCountEl.classList.toggle('near-limit', length >= SEARCH_MAX_LENGTH - 20);
+    });
+  }
 
   function getReportedIds() {
     try {
@@ -904,13 +908,13 @@ function initLFG() {
     }
   }
 
-  // Filtre par mode câblé comme celui des guides : un seul chip actif,
-  // ré-affiche simplement la dernière liste reçue de Firestore.
+  // Filtre par objectif : un seul chip actif, ré-affiche simplement la
+  // dernière liste reçue de Firestore (pas de nouvelle requête réseau).
   filterChips.forEach(chip => {
     chip.addEventListener('click', () => {
       filterChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-      activeModeFilter = chip.dataset.lfgFilter || 'toutes';
+      activeObjectifFilter = chip.dataset.lfgFilter || 'toutes';
       if (lastSnapshot) renderLFG(lastSnapshot);
     });
   });
@@ -935,7 +939,7 @@ function initLFG() {
         if (ageMs > maxAgeMs) return false;
       }
 
-      if (activeModeFilter !== 'toutes' && data.mode !== activeModeFilter) return false;
+      if (activeObjectifFilter !== 'toutes' && data.objectif !== activeObjectifFilter) return false;
 
       return true;
     });
@@ -961,7 +965,8 @@ function initLFG() {
       head.className = 'review-card-head';
 
       // .textContent uniquement : tout ce qui vient d'un visiteur (pseudo,
-      // contact) doit rester du texte brut, jamais interprété comme HTML.
+      // recherche, contact) doit rester du texte brut, jamais interprété
+      // comme HTML.
       const author = document.createElement('span');
       author.className = 'review-author';
       author.textContent = String(data.pseudo || 'Anonyme').slice(0, 30);
@@ -982,23 +987,30 @@ function initLFG() {
       const meta = document.createElement('div');
       meta.className = 'lfg-meta';
 
-      const modeTag = document.createElement('span');
-      modeTag.className = 'lfg-mode-tag';
-      modeTag.textContent = MODE_LABELS[data.mode] || String(data.mode || 'Autre').slice(0, 20);
-
       const objectifTag = document.createElement('span');
       objectifTag.className = 'lfg-objectif-tag';
-      objectifTag.textContent = OBJECTIF_LABELS[data.objectif] || String(data.objectif || '').slice(0, 24);
-
-      meta.appendChild(modeTag);
+      objectifTag.textContent = '🎯 ' + (OBJECTIF_LABELS[data.objectif] || String(data.objectif || '').slice(0, 24));
       if (data.objectif) meta.appendChild(objectifTag);
+
+      // Le texte libre ("Ce que tu recherches") est mis en forme à part,
+      // visuellement distinct des informations courtes ci-dessus.
+      const searchBlock = document.createElement('div');
+      searchBlock.className = 'lfg-search-block';
+      const searchLabel = document.createElement('span');
+      searchLabel.className = 'lfg-search-label';
+      searchLabel.textContent = '📝 Recherche';
+      const searchText = document.createElement('p');
+      searchText.className = 'lfg-search-text';
+      searchText.textContent = String(data.recherche || '').slice(0, SEARCH_MAX_LENGTH);
+      searchBlock.appendChild(searchLabel);
+      searchBlock.appendChild(searchText);
 
       const contactRow = document.createElement('div');
       contactRow.className = 'lfg-contact-row';
 
       const contact = document.createElement('span');
       contact.className = 'lfg-contact';
-      contact.textContent = `Contact : ${String(data.contact || '').slice(0, 40)}`;
+      contact.textContent = `💬 ${String(data.contact || '').slice(0, 40)}`;
 
       const reportBtn = document.createElement('button');
       reportBtn.type = 'button';
@@ -1024,6 +1036,7 @@ function initLFG() {
 
       card.appendChild(head);
       card.appendChild(meta);
+      card.appendChild(searchBlock);
       card.appendChild(contactRow);
       listEl.appendChild(card);
     });
@@ -1042,12 +1055,12 @@ function initLFG() {
 
     const pseudo = (pseudoInput.value || '').trim();
     const trophees = parseInt(trophiesInput.value, 10);
-    const mode = modeInput.value;
     const objectif = objectifInput.value;
+    const recherche = (searchInput.value || '').trim().slice(0, SEARCH_MAX_LENGTH);
     const contact = (contactInput.value || '').trim();
 
-    if (!pseudo || !mode || !objectif || !contact || !Number.isFinite(trophees) || trophees < 0 || trophees > 500000) {
-      setStatus('Merci de renseigner un pseudo, un nombre de trophées valide, un mode, un objectif et un contact.', 'error');
+    if (!pseudo || !objectif || !recherche || !contact || !Number.isFinite(trophees) || trophees < 0 || trophees > 500000) {
+      setStatus('Merci de renseigner un pseudo, un nombre de trophées valide, un objectif, ta recherche et un contact.', 'error');
       return;
     }
 
@@ -1057,13 +1070,14 @@ function initLFG() {
     lfgRef.add({
       pseudo: pseudo.slice(0, 30),
       trophees: trophees,
-      mode: mode,
       objectif: objectif,
+      recherche: recherche,
       contact: contact.slice(0, 40),
       reportsCount: 0,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
       form.reset();
+      if (searchCountEl) searchCountEl.textContent = `0 / ${SEARCH_MAX_LENGTH}`;
       setStatus('Merci, ton annonce a bien été publiée !', 'success');
     }).catch((error) => {
       console.warn('LFG : envoi Firestore impossible', error);

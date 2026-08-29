@@ -1081,6 +1081,19 @@ section[id] { scroll-margin-top: 84px; }
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
+.lfg-field-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.lfg-char-count {
+  font-family: var(--ff-mono);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.lfg-char-count.near-limit { color: var(--primary); }
 .lfg-safety-note {
   font-size: 12.5px;
   line-height: 1.5;
@@ -1182,7 +1195,7 @@ section[id] { scroll-margin-top: 84px; }
   line-height: 1.55;
 }
 
-/* --- LFG : détails spécifiques à une annonce (trophées, mode, contact) --- */
+/* --- LFG : détails spécifiques à une annonce (trophées, objectif, recherche, contact) --- */
 .lfg-trophies {
   font-family: var(--ff-mono);
   font-size: 13px;
@@ -1196,17 +1209,6 @@ section[id] { scroll-margin-top: 84px; }
   gap: 10px;
   margin-top: 6px;
 }
-.lfg-mode-tag {
-  font-family: var(--ff-mono);
-  font-size: 11.5px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--secondary);
-  background: rgba(61,139,255,.12);
-  border: 1px solid rgba(61,139,255,.3);
-  padding: 4px 10px;
-  border-radius: 999px;
-}
 .lfg-objectif-tag {
   font-family: var(--ff-mono);
   font-size: 11.5px;
@@ -1217,6 +1219,31 @@ section[id] { scroll-margin-top: 84px; }
   padding: 4px 10px;
   border-radius: 999px;
 }
+.lfg-search-block {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--bg-alt);
+  border-left: 2px solid var(--secondary);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+}
+.section-light .lfg-search-block { background: var(--light); }
+.lfg-search-label {
+  display: block;
+  font-family: var(--ff-mono);
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.lfg-search-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-light);
+  margin: 0;
+  overflow-wrap: break-word;
+}
+.section-light .lfg-search-text { color: var(--text-dark); }
 .lfg-contact-row {
   display: flex;
   align-items: center;
@@ -1256,7 +1283,7 @@ section[id] { scroll-margin-top: 84px; }
 .lfg-report-btn:disabled { color: var(--text-muted); opacity: .6; cursor: default; }
 .lfg-report-btn::before { content: "⚑"; font-size: 11px; }
 
-/* Filtre par mode au-dessus de la liste — même chip qu'ailleurs sur le site */
+/* Filtre par objectif au-dessus de la liste — même chip qu'ailleurs sur le site */
 #lfg-filter-row { margin: 14px 0 18px; }
 
 
@@ -1433,7 +1460,7 @@ body {
   /* Recherche de coéquipiers (LFG) */
   .lfg-safety-note { font-size: 12px; padding: 9px 11px; }
   .lfg-trophies { font-size: 12px; }
-  .lfg-mode-tag { font-size: 11px; padding: 3px 9px; }
+  .lfg-objectif-tag { font-size: 11px; padding: 3px 9px; }
   .lfg-contact { font-size: 12px; padding: 3px 9px; }
   .reviews-list { max-height: 460px; }
 }
